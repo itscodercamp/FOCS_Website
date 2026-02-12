@@ -76,18 +76,18 @@ const ChatBot: React.FC = () => {
 
     const userMsg: Message = { role: 'user', text: input };
     const newMessages = [...messages, userMsg];
-    
+
     setMessages(newMessages);
     setInput('');
     setIsLoading(true);
 
     try {
-      // Create a new GoogleGenAI instance right before making an API call to ensure it uses the most up-to-date configuration.
-      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-      
+      // Use Vite's import.meta.env for client-side environment variables
+      const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
+
       // Construct history for context
       // We limit history to last 10 turns to save tokens and keep context fresh
-      const historyContext = newMessages.slice(-10).map(m => 
+      const historyContext = newMessages.slice(-10).map(m =>
         `${m.role === 'user' ? 'User' : 'Model'}: ${m.text}`
       ).join('\n');
 
@@ -106,7 +106,7 @@ const ChatBot: React.FC = () => {
 
       // The text output is obtained by accessing the .text property directly.
       const botText = response.text || "I'm having trouble connecting right now. Please try again.";
-      
+
       setMessages(prev => [...prev, { role: 'model', text: botText }]);
 
     } catch (error) {
@@ -121,7 +121,7 @@ const ChatBot: React.FC = () => {
   const renderText = (text: string) => {
     return text.split('\n').map((line, i) => {
       if (!line.trim()) return <br key={i} />;
-      
+
       // Handle Bullet Points
       if (line.trim().startsWith('- ') || line.trim().startsWith('* ')) {
         const content = line.trim().substring(2);
@@ -140,7 +140,7 @@ const ChatBot: React.FC = () => {
   // Helper to parse **bold** text
   const parseBold = (text: string) => {
     const parts = text.split('**');
-    return parts.map((part, index) => 
+    return parts.map((part, index) =>
       index % 2 === 1 ? <strong key={index} className="font-bold">{part}</strong> : part
     );
   };
@@ -164,9 +164,9 @@ const ChatBot: React.FC = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center md:items-end md:justify-end md:p-6 animate-fade-in">
           {/* Backdrop for mobile focus */}
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm md:hidden" onClick={() => setIsOpen(false)}></div>
-          
+
           <div className="bg-white w-full h-full md:w-[400px] md:h-[600px] md:rounded-3xl shadow-2xl flex flex-col overflow-hidden relative z-10 animate-fade-in-up border border-slate-200">
-            
+
             {/* Header */}
             <div className="bg-brand-900 text-white p-4 flex items-center justify-between shadow-md flex-shrink-0">
               <div className="flex items-center gap-3">
@@ -181,15 +181,15 @@ const ChatBot: React.FC = () => {
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <button 
-                  onClick={clearChat} 
+                <button
+                  onClick={clearChat}
                   className="p-2 hover:bg-white/10 rounded-full text-slate-300 hover:text-white transition-colors"
                   title="Clear Chat"
                 >
                   <Trash2 size={18} />
                 </button>
-                <button 
-                  onClick={() => setIsOpen(false)} 
+                <button
+                  onClick={() => setIsOpen(false)}
                   className="p-2 hover:bg-white/10 rounded-full text-slate-300 hover:text-white transition-colors"
                 >
                   {/* Minimize on desktop, Close on mobile */}
@@ -202,16 +202,15 @@ const ChatBot: React.FC = () => {
             {/* Chat Area */}
             <div className="flex-grow overflow-y-auto p-4 space-y-4 bg-slate-50 scroll-smooth">
               {messages.map((msg, idx) => (
-                <div 
-                  key={idx} 
+                <div
+                  key={idx}
                   className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
-                  <div 
-                    className={`max-w-[85%] rounded-2xl p-4 shadow-sm ${
-                      msg.role === 'user' 
-                        ? 'bg-brand-600 text-white rounded-br-none' 
+                  <div
+                    className={`max-w-[85%] rounded-2xl p-4 shadow-sm ${msg.role === 'user'
+                        ? 'bg-brand-600 text-white rounded-br-none'
                         : 'bg-white text-slate-700 border border-slate-100 rounded-bl-none'
-                    }`}
+                      }`}
                   >
                     <div className="text-sm md:text-[15px]">
                       {renderText(msg.text)}
@@ -241,8 +240,8 @@ const ChatBot: React.FC = () => {
                   placeholder="Ask about services, jobs, or training..."
                   className="w-full bg-slate-100 text-slate-900 placeholder-slate-400 rounded-full py-3.5 pl-6 pr-12 focus:outline-none focus:ring-2 focus:ring-brand-500/50 transition-all font-medium"
                 />
-                <button 
-                  type="submit" 
+                <button
+                  type="submit"
                   disabled={!input.trim() || isLoading}
                   className="absolute right-2 p-2 bg-brand-600 text-white rounded-full hover:bg-brand-500 disabled:opacity-50 disabled:hover:bg-brand-600 transition-colors shadow-sm"
                 >
