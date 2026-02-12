@@ -30,11 +30,24 @@ const Careers: React.FC = () => {
 
   React.useEffect(() => {
     const fetchJobs = async () => {
-      const data = await api.getJobs();
-      if (data && Array.isArray(data)) {
-        setJobs(data);
+      try {
+        const data = await api.getJobs();
+        console.log("Fetched Jobs Data:", data);
+
+        if (Array.isArray(data)) {
+          setJobs(data);
+        } else if (data && typeof data === 'object' && Array.isArray(data.vacancies)) {
+          // Handle wrapped response like { vacancies: [...] }
+          setJobs(data.vacancies);
+        } else if (data && typeof data === 'object' && Array.isArray(data.jobs)) {
+          // Handle wrapped response like { jobs: [...] }
+          setJobs(data.jobs);
+        }
+      } catch (err) {
+        console.error("Error fetching jobs:", err);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
     fetchJobs();
   }, []);
