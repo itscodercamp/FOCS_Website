@@ -89,15 +89,24 @@ export const api = {
     return handleResponse(res);
   },
 
-  // --- 6. Jobs/Careers ---
+  // --- 6. Jobs/Vacancies ---
   getJobs: async () => {
     try {
-      const res = await fetch(`${API_BASE_URL}/jobs`);
+      const res = await fetch(`${API_BASE_URL}/vacancies`);
       if (!res.ok) throw new Error('Failed to fetch jobs');
       return await res.json();
     } catch (error) {
       // Silent fallback
       return null;
     }
+  },
+
+  createVacancy: async (data: { title: string; location: string; type: string; description: string; requirements: string[] }) => {
+    const res = await fetch(`${API_BASE_URL}/vacancies`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    return handleResponse(res);
   }
 };

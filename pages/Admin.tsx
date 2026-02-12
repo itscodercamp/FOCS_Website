@@ -21,6 +21,11 @@ const Admin: React.FC = () => {
     shortDesc: '', fullDesc: '', mainImage: '', gallery: ''
   });
 
+  // --- Vacancy Form State ---
+  const [vacancyForm, setVacancyForm] = useState({
+    title: '', location: '', type: '', description: '', requirements: ''
+  });
+
   const handleProjectSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setStatus('submitting');
@@ -72,6 +77,29 @@ const Admin: React.FC = () => {
     }
   };
 
+  const handleVacancySubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setStatus('submitting');
+    try {
+      const payload = {
+        ...vacancyForm,
+        requirements: vacancyForm.requirements.split(',').map(s => s.trim())
+      };
+
+      await api.createVacancy(payload);
+
+      setStatus('success');
+      setMessage('Job vacancy posted successfully!');
+      setVacancyForm({
+        title: '', location: '', type: '', description: '', requirements: ''
+      });
+    } catch (error: any) {
+      console.warn(error);
+      setStatus('error');
+      setMessage(error.message || 'Failed to post vacancy.');
+    }
+  };
+
   return (
     <div className="bg-slate-50 min-h-screen pt-28 pb-20">
       <div className="container mx-auto px-4 md:px-6 max-w-4xl">
@@ -82,20 +110,27 @@ const Admin: React.FC = () => {
         </div>
 
         {/* Tab Switcher */}
-        <div className="flex p-1 bg-white rounded-xl shadow-sm border border-slate-200 mb-8 max-w-md mx-auto">
+        <div className="flex p-1 bg-white rounded-xl shadow-sm border border-slate-200 mb-8 max-w-lg mx-auto overflow-x-auto">
           <button
             onClick={() => setActiveTab('project')}
-            className={`flex-1 py-3 rounded-lg text-sm font-bold transition-all flex items-center justify-center gap-2 ${activeTab === 'project' ? 'bg-brand-600 text-white shadow-md' : 'text-slate-500 hover:bg-slate-50'
+            className={`flex-1 min-w-[120px] py-3 rounded-lg text-sm font-bold transition-all flex items-center justify-center gap-2 ${activeTab === 'project' ? 'bg-brand-600 text-white shadow-md' : 'text-slate-500 hover:bg-slate-50'
               }`}
           >
-            <Layout size={18} /> Add Project
+            <Layout size={18} /> Projects
           </button>
           <button
             onClick={() => setActiveTab('event')}
-            className={`flex-1 py-3 rounded-lg text-sm font-bold transition-all flex items-center justify-center gap-2 ${activeTab === 'event' ? 'bg-brand-600 text-white shadow-md' : 'text-slate-500 hover:bg-slate-50'
+            className={`flex-1 min-w-[120px] py-3 rounded-lg text-sm font-bold transition-all flex items-center justify-center gap-2 ${activeTab === 'event' ? 'bg-brand-600 text-white shadow-md' : 'text-slate-500 hover:bg-slate-50'
               }`}
           >
-            <Calendar size={18} /> Add Event
+            <Calendar size={18} /> Events
+          </button>
+          <button
+            onClick={() => setActiveTab('vacancy' as any)}
+            className={`flex-1 min-w-[120px] py-3 rounded-lg text-sm font-bold transition-all flex items-center justify-center gap-2 ${activeTab === ('vacancy' as any) ? 'bg-brand-600 text-white shadow-md' : 'text-slate-500 hover:bg-slate-50'
+              }`}
+          >
+            <Briefcase size={18} /> Vacancies
           </button>
         </div>
 
@@ -112,7 +147,7 @@ const Admin: React.FC = () => {
           {/* --- PROJECT FORM --- */}
           {activeTab === 'project' && (
             <form onSubmit={handleProjectSubmit} className="space-y-6">
-              <h3 className="text-xl font-bold mb-4">New Showcase Project</h3>
+              <h3 className="text-xl font-bold mb-4 text-slate-900">New Showcase Project</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <input placeholder="Project Title" required className="input-field" value={projectForm.title} onChange={e => setProjectForm({ ...projectForm, title: e.target.value })} />
                 <input placeholder="Student Name" required className="input-field" value={projectForm.studentName} onChange={e => setProjectForm({ ...projectForm, studentName: e.target.value })} />
@@ -139,7 +174,7 @@ const Admin: React.FC = () => {
           {/* --- EVENT FORM --- */}
           {activeTab === 'event' && (
             <form onSubmit={handleEventSubmit} className="space-y-6">
-              <h3 className="text-xl font-bold mb-4">New Event / Workshop</h3>
+              <h3 className="text-xl font-bold mb-4 text-slate-900">New Event / Workshop</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <input placeholder="Event Title" required className="input-field" value={eventForm.title} onChange={e => setEventForm({ ...eventForm, title: e.target.value })} />
                 <input placeholder="Category (e.g., Workshop)" required className="input-field" value={eventForm.category} onChange={e => setEventForm({ ...eventForm, category: e.target.value })} />
@@ -157,6 +192,25 @@ const Admin: React.FC = () => {
 
               <button type="submit" disabled={status === 'submitting'} className="submit-btn">
                 {status === 'submitting' ? <Loader2 className="animate-spin" /> : 'Upload Event'}
+              </button>
+            </form>
+          )}
+
+          {/* --- VACANCY FORM --- */}
+          {activeTab === ('vacancy' as any) && (
+            <form onSubmit={handleVacancySubmit} className="space-y-6">
+              <h3 className="text-xl font-bold mb-4 text-slate-900">New Job Vacancy</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <input placeholder="Job Title (e.g. Senior AI Developer)" required className="input-field" value={vacancyForm.title} onChange={e => setVacancyForm({ ...vacancyForm, title: e.target.value })} />
+                <input placeholder="Location (e.g. Remote, Nagpur)" required className="input-field" value={vacancyForm.location} onChange={e => setVacancyForm({ ...vacancyForm, location: e.target.value })} />
+                <input placeholder="Job Type (e.g. Full-time, Intern)" required className="input-field" value={vacancyForm.type} onChange={e => setVacancyForm({ ...vacancyForm, type: e.target.value })} />
+                <input placeholder="Requirements (comma separated)" required className="input-field" value={vacancyForm.requirements} onChange={e => setVacancyForm({ ...vacancyForm, requirements: e.target.value })} />
+              </div>
+
+              <textarea placeholder="Job Description" required rows={4} className="input-field w-full" value={vacancyForm.description} onChange={e => setVacancyForm({ ...vacancyForm, description: e.target.value })} />
+
+              <button type="submit" disabled={status === 'submitting'} className="submit-btn">
+                {status === 'submitting' ? <Loader2 className="animate-spin" /> : 'Post Vacancy'}
               </button>
             </form>
           )}

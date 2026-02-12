@@ -6,13 +6,10 @@ import { api } from '../services/api';
 
 interface Job {
   id: number;
-  role: string;
+  title: string;
   type: string;
-  loc: string;
-  department: string;
-  exp: string;
+  location: string;
   description: string;
-  responsibilities: string[];
   requirements: string[];
 }
 
@@ -64,7 +61,7 @@ const Careers: React.FC = () => {
     try {
       await api.submitApplication({
         ...application,
-        jobRole: selectedJob?.role || 'Unspecified'
+        jobRole: selectedJob?.title || 'Unspecified'
       });
 
       setStatus('success');
@@ -139,11 +136,10 @@ const Careers: React.FC = () => {
             {jobs.map((job) => (
               <div key={job.id} className="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-slate-100 flex flex-col md:flex-row justify-between items-start md:items-center hover:shadow-lg transition-all hover:border-brand-200 gap-4 group">
                 <div>
-                  <h3 className="text-lg md:text-xl font-bold text-slate-900 mb-1 md:mb-2 group-hover:text-brand-600 transition-colors">{job.role}</h3>
+                  <h3 className="text-lg md:text-xl font-bold text-slate-900 mb-1 md:mb-2 group-hover:text-brand-600 transition-colors">{job.title}</h3>
                   <div className="flex flex-wrap gap-3 text-sm font-medium text-slate-500">
                     <span className="flex items-center gap-1"><Briefcase size={14} /> {job.type}</span>
-                    <span className="flex items-center gap-1"><MapPin size={14} /> {job.loc}</span>
-                    <span className="flex items-center gap-1"><Clock size={14} /> {job.exp}</span>
+                    <span className="flex items-center gap-1"><MapPin size={14} /> {job.location}</span>
                   </div>
                 </div>
                 <button
@@ -177,25 +173,17 @@ const Careers: React.FC = () => {
 
             {/* Left Panel: Job Details */}
             <div className="w-full md:w-3/5 p-8 md:p-12 overflow-y-auto bg-slate-50">
-              <span className="text-xs font-bold uppercase tracking-wider text-brand-600 mb-2 block">{selectedJob.department}</span>
-              <h2 className="text-3xl font-bold text-slate-900 mb-6">{selectedJob.role}</h2>
+              <h2 className="text-3xl font-bold text-slate-900 mb-6">{selectedJob.title}</h2>
 
               <div className="flex flex-wrap gap-3 mb-8">
                 <span className="px-3 py-1 bg-white border border-slate-200 rounded-full text-xs font-bold text-slate-600">{selectedJob.type}</span>
-                <span className="px-3 py-1 bg-white border border-slate-200 rounded-full text-xs font-bold text-slate-600">{selectedJob.loc}</span>
-                <span className="px-3 py-1 bg-white border border-slate-200 rounded-full text-xs font-bold text-slate-600">{selectedJob.exp} Experience</span>
+                <span className="px-3 py-1 bg-white border border-slate-200 rounded-full text-xs font-bold text-slate-600">{selectedJob.location}</span>
+                <span className="px-3 py-1 bg-white border border-slate-200 rounded-full text-xs font-bold text-slate-600">Level: Intermediate</span>
               </div>
 
               <div className="prose prose-slate">
                 <h3 className="font-bold text-slate-900 mb-2">About the Role</h3>
                 <p className="text-slate-600 mb-6 leading-relaxed">{selectedJob.description}</p>
-
-                <h3 className="font-bold text-slate-900 mb-3">Responsibilities</h3>
-                <ul className="list-disc pl-5 space-y-2 text-slate-600 mb-6">
-                  {selectedJob.responsibilities.map((req, i) => (
-                    <li key={i}>{req}</li>
-                  ))}
-                </ul>
 
                 <h3 className="font-bold text-slate-900 mb-3">Requirements</h3>
                 <ul className="list-disc pl-5 space-y-2 text-slate-600 mb-6">
