@@ -1,6 +1,6 @@
 
 // Centralized API Configuration
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:5000/api';
+const API_BASE_URL = 'http://82.29.165.213:8000/api';
 
 // Helper to handle responses and throw specific backend errors
 const handleResponse = async (res: Response) => {
