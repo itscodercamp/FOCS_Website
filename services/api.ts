@@ -1,6 +1,7 @@
 
 // Centralized API Configuration
-const API_BASE_URL = 'http://82.29.165.213:8000/api';
+// Use environment variable for production, fallback to IP for development
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://82.29.165.213:8000/api';
 
 // Helper to handle responses and throw specific backend errors
 const handleResponse = async (res: Response) => {
