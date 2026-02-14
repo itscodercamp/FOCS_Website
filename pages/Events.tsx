@@ -139,118 +139,125 @@ const Events: React.FC = () => {
       {/* Full Screen Modal */}
       {selectedEvent && (
         <div className="fixed inset-0 z-50 bg-white overflow-y-auto animate-fade-in no-scrollbar">
-          {/* Top Bar Navigation */}
-          <div className="fixed top-0 left-0 w-full bg-white/90 backdrop-blur-md border-b border-slate-100 z-50 px-4 py-4 flex justify-between items-center shadow-sm">
-            <div className="flex items-center gap-3">
-              <div className="bg-brand-100 p-2 rounded-lg text-brand-600">
-                <Tag size={20} />
-              </div>
-              <span className="font-bold text-slate-900 hidden md:block">{selectedEvent.title}</span>
-            </div>
-            <button
-              onClick={() => setSelectedEvent(null)}
-              className="flex items-center gap-2 text-slate-500 hover:text-slate-900 font-bold bg-slate-100 hover:bg-slate-200 px-5 py-2.5 rounded-full transition-colors"
-            >
-              Close <X size={18} />
-            </button>
-          </div>
+          {/* Close Button */}
+          <button
+            onClick={() => setSelectedEvent(null)}
+            className="fixed top-8 right-8 z-[60] bg-white/80 hover:bg-white text-slate-900 backdrop-blur-xl p-3 rounded-full transition-all shadow-2xl border border-slate-200 group scale-90 md:scale-100"
+          >
+            <X size={24} className="group-hover:rotate-90 transition-transform duration-300" />
+          </button>
 
-          <div className="pt-20">
-            {/* Header / Banner */}
-            <div className="h-[40vh] md:h-[55vh] relative px-4 md:px-8 flex items-center justify-center bg-slate-50">
+          <div className="min-h-screen flex flex-col items-center">
+            {/* Immersive Header */}
+            <div className="w-full h-[60vh] md:h-[75vh] relative flex items-center justify-center bg-slate-100/50 p-4 md:p-12 lg:p-20">
               <div
-                className="w-full h-full max-w-6xl rounded-[2rem] md:rounded-[3rem] overflow-hidden shadow-2xl relative group cursor-zoom-in"
+                className="w-full h-full max-w-7xl rounded-[2.5rem] md:rounded-[4rem] overflow-hidden shadow-[0_32px_64px_-16px_rgba(0,0,0,0.3)] relative group cursor-zoom-in border border-white/40"
                 onClick={() => setPreviewUrl(getFileUrl(selectedEvent.mainImage))}
               >
-                <img src={getFileUrl(selectedEvent.mainImage)} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                  <div className="bg-white/20 backdrop-blur-md p-4 rounded-full border border-white/30 text-white scale-75 group-hover:scale-100 transition-transform">
-                    <Search size={32} />
+                <img src={getFileUrl(selectedEvent.mainImage)} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" />
+                <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center">
+                  <div className="bg-white/20 backdrop-blur-xl p-5 rounded-full border border-white/30 text-white scale-75 group-hover:scale-100 transition-all duration-500">
+                    <Search size={40} />
                   </div>
                 </div>
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-70"></div>
-                <div className="absolute bottom-8 md:bottom-12 left-8 md:left-12">
-                  <span className="inline-block px-4 py-1.5 bg-brand-500 text-white text-[9px] font-bold rounded-full mb-4 uppercase tracking-[0.2em]">{selectedEvent.category}</span>
-                  <h1 className="text-3xl md:text-5xl lg:text-6xl font-black text-white leading-[1.1] tracking-tight">{selectedEvent.title}</h1>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent"></div>
+                <div className="absolute bottom-10 md:bottom-20 left-10 md:left-20 max-w-3xl">
+                  <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-brand-500 border border-brand-400 rounded-full text-white text-[10px] font-black uppercase tracking-[0.2em] mb-6 shadow-xl shadow-brand-500/20">
+                    <Sparkles size={14} /> {selectedEvent.category}
+                  </div>
+                  <h1 className="text-4xl md:text-6xl lg:text-7xl font-black text-white leading-[1.05] tracking-tight">{selectedEvent.title}</h1>
                 </div>
               </div>
             </div>
 
             {/* Content Body */}
-            <div className="container mx-auto px-4 md:px-6 py-12 md:py-20 flex flex-col lg:flex-row gap-12 lg:gap-20">
+            <div className="w-full max-w-7xl px-6 md:px-20 py-16 md:py-28 grid grid-cols-1 lg:grid-cols-12 gap-16 md:gap-24">
 
-              {/* Left Side: Meta Data */}
-              <div className="lg:w-1/3 order-2 lg:order-1">
-                <div className="bg-slate-50/50 backdrop-blur-sm p-8 rounded-[2rem] border border-slate-100 space-y-10 sticky top-32">
-                  <div className="space-y-1.5">
-                    <h4 className="text-[8px] font-bold text-slate-400 uppercase tracking-[0.3em] flex items-center gap-2">
-                      <Calendar size={12} className="text-brand-500" /> Date & Time
+              {/* Sidebar: Meta Data */}
+              <div className="lg:col-span-4 space-y-12">
+                <div className="bg-slate-50/80 backdrop-blur-xl p-8 md:p-10 rounded-[2.5rem] border border-slate-100 space-y-10 group hover:border-brand-200 transition-colors duration-500">
+                  <div className="space-y-2">
+                    <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em] flex items-center gap-2">
+                      <Calendar size={14} className="text-brand-500" /> Event Schedule
                     </h4>
-                    <p className="text-sm font-extrabold text-slate-900">{selectedEvent.date}</p>
-                    <p className="text-[11px] text-slate-500 font-medium">{selectedEvent.time}</p>
+                    <p className="text-[15px] font-black text-slate-900">{selectedEvent.date}</p>
+                    <p className="text-[12px] text-slate-500 font-bold uppercase tracking-widest">{selectedEvent.time}</p>
                   </div>
 
-                  <div className="space-y-1.5">
-                    <h4 className="text-[8px] font-bold text-slate-400 uppercase tracking-[0.3em] flex items-center gap-2">
-                      <MapPin size={12} className="text-brand-500" /> Venue
+                  <div className="space-y-2">
+                    <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em] flex items-center gap-2">
+                      <MapPin size={14} className="text-brand-500" /> Location
                     </h4>
-                    <p className="text-sm font-extrabold text-slate-900 leading-snug">{selectedEvent.venue}</p>
+                    <p className="text-[15px] font-black text-slate-900 leading-[1.4]">{selectedEvent.venue}</p>
                   </div>
 
-                  <div className="space-y-1.5">
-                    <h4 className="text-[8px] font-bold text-slate-400 uppercase tracking-[0.3em] flex items-center gap-2">
-                      <User size={12} className="text-brand-500" /> Hosted By
+                  <div className="space-y-2">
+                    <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em] flex items-center gap-2">
+                      <User size={14} className="text-brand-500" /> Organized By
                     </h4>
-                    <p className="text-sm font-extrabold text-slate-900">{selectedEvent.organizer}</p>
+                    <p className="text-[15px] font-black text-slate-900">{selectedEvent.organizer}</p>
                   </div>
 
-                  <div className="pt-6 border-t border-slate-200">
-                    <button className="w-full bg-brand-600 hover:bg-brand-500 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-brand-600/10 transition-all flex items-center justify-center gap-2 text-xs">
-                      Contact Organizer <ArrowRight size={16} />
+                  <div className="pt-8 border-t border-slate-200">
+                    <button className="w-full bg-brand-600 hover:bg-brand-500 text-white font-black py-4 rounded-2xl shadow-[0_20px_40px_-10px_rgba(37,99,235,0.3)] transition-all flex items-center justify-center gap-3 text-[11px] uppercase tracking-[0.2em] transform hover:-translate-y-1">
+                      Join Interaction <ArrowRight size={18} />
                     </button>
                   </div>
                 </div>
+
+                <div className="hidden lg:block pt-8 px-4 opacity-50">
+                  <p className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.5em] leading-relaxed">
+                    © 2026 FOCS Chronicles • Engineering Excellence
+                  </p>
+                </div>
               </div>
 
-              {/* Right Side: Description & Gallery */}
-              <div className="lg:w-2/3 order-1 lg:order-2">
-                <div className="max-w-none">
-                  <h2 className="text-xl font-black text-slate-900 mb-6 tracking-tight">About the Event</h2>
-                  <p className="text-slate-600 text-[13px] md:text-sm leading-relaxed mb-12 font-light">
-                    {selectedEvent.fullDesc}
-                  </p>
+              {/* Main Content: Description & Gallery */}
+              <div className="lg:col-span-8 space-y-20">
+                <div className="space-y-10">
+                  <div className="space-y-6">
+                    <h2 className="text-2xl md:text-3xl font-black text-slate-900 tracking-tight">The Experience</h2>
+                    <p className="text-slate-600 text-[14px] md:text-[16px] leading-[1.8] font-normal opacity-90 max-w-4xl">
+                      {selectedEvent.fullDesc}
+                    </p>
+                  </div>
 
-                  <h3 className="text-lg font-black text-slate-900 mb-8 flex items-center gap-3 tracking-tight">
-                    <Camera size={20} className="text-brand-600" /> Event Highlights
-                  </h3>
+                  <div className="space-y-12 pt-10 border-t border-slate-100">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em] flex items-center gap-3">
+                        <Camera size={18} className="text-brand-500" /> Caught in Motion
+                      </h3>
+                    </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {selectedEvent.gallery.map((img, i) => (
-                      <div
-                        key={i}
-                        className="rounded-2xl overflow-hidden shadow-sm border border-slate-100 group aspect-video relative cursor-zoom-in"
-                        onClick={() => setPreviewUrl(getFileUrl(img))}
-                      >
-                        <img src={getFileUrl(img)} className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700" />
-                        <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                          <div className="bg-white/20 backdrop-blur-md p-3 rounded-full border border-white/30 text-white scale-75 group-hover:scale-100 transition-transform">
-                            <Search size={24} />
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                      {selectedEvent.gallery.map((img, i) => (
+                        <div
+                          key={i}
+                          className="rounded-[2.5rem] overflow-hidden shadow-2xl border border-slate-100 group aspect-[4/3] relative cursor-zoom-in bg-slate-50"
+                          onClick={() => setPreviewUrl(getFileUrl(img))}
+                        >
+                          <img src={getFileUrl(img)} className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-1000" />
+                          <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center">
+                            <div className="bg-white/20 backdrop-blur-xl p-4 rounded-full border border-white/30 text-white scale-75 group-hover:scale-100 transition-all duration-500">
+                              <Search size={28} />
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
                 </div>
 
-                <div className="mt-16 pt-12 border-t border-slate-100">
-                  <p className="text-slate-500 italic mb-8">
-                    Interested in attending our next event or hosting a workshop with us?
-                    FOCS Academy frequently partners with colleges and corporate houses.
+                <div className="pt-20 border-t border-slate-100 flex flex-col items-center text-center">
+                  <p className="text-slate-400 font-light text-[13px] italic mb-10 max-w-2xl leading-relaxed">
+                    "FOCS Academy's chronicles are a testimony to our commitment to bridging the gap between academic brilliance and industry innovation."
                   </p>
-                  <div className="flex flex-wrap gap-4">
-                    <span className="bg-slate-100 text-slate-600 px-5 py-2 rounded-full text-sm font-bold">#FOCSEvents</span>
-                    <span className="bg-slate-100 text-slate-600 px-5 py-2 rounded-full text-sm font-bold">#ItsCoderCamp</span>
-                    <span className="bg-slate-100 text-slate-600 px-5 py-2 rounded-full text-sm font-bold">#TechInNagpur</span>
+                  <div className="flex flex-wrap justify-center gap-3">
+                    {["#FOCSChronicles", "#EngineeringFuture", "#TechSummit2026"].map((tag, i) => (
+                      <span key={i} className="bg-slate-50 text-slate-400 px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest border border-slate-100">
+                        {tag}
+                      </span>
+                    ))}
                   </div>
                 </div>
               </div>
