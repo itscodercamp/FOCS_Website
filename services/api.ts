@@ -21,8 +21,9 @@ export const getFileUrl = (path: string | undefined): string => {
   if (!path) return 'https://via.placeholder.com/800x600?text=No+Image';
   if (path.startsWith('http')) return path;
 
-  // Remove /api from base URL and join with path
-  const baseUrl = API_BASE_URL.replace('/api', '');
+  // Safely remove ONLY the trailing /api from base URL using regex
+  // This prevents mangling the "apis" subdomain
+  const baseUrl = API_BASE_URL.replace(/\/api$/, '');
   const cleanPath = path.startsWith('/') ? path : `/${path}`;
   return `${baseUrl}${cleanPath}`;
 };
