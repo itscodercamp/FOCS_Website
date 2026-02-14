@@ -1,22 +1,7 @@
+
 // Centralized API Configuration
-const getBaseUrl = () => {
-  // Use environment variable if provided
-  if (import.meta.env.VITE_API_URL) return import.meta.env.VITE_API_URL;
-
-  // Automatically detect environment
-  if (typeof window !== 'undefined') {
-    const { hostname, protocol } = window.location;
-    // Development fallback
-    if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname.startsWith('192.168.')) {
-      return 'http://localhost:8000/api';
-    }
-    // Production fallback: Use sub-domain with same protocol as frontend (prevents mixed-content)
-    return `${protocol}//apis.focsit.in/api`;
-  }
-  return 'https://apis.focsit.in/api';
-};
-
-const API_BASE_URL = getBaseUrl();
+// Use environment variable for production, fallback to production subdomain
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://apis.focsit.in/api';
 
 // Helper to handle responses and throw specific backend errors
 const handleResponse = async (res: Response) => {
@@ -27,9 +12,9 @@ const handleResponse = async (res: Response) => {
   return res.json();
 };
 
-// Check for mixed content issues
+// Check for mixed content issues (HTTPS frontend calling HTTP backend)
 if (typeof window !== 'undefined' && window.location.protocol === 'https:' && API_BASE_URL.startsWith('http:')) {
-  console.warn("Security Warning: You are accessing an insecure backend (HTTP) from a secure frontend (HTTPS). Browsers may block this connection.");
+  console.warn("Security Warning: You are accessing an insecure backend (HTTP) from a secure frontend (HTTPS). Browsers may block this connection due to Mixed Content policies.");
 }
 
 // Helper to get full file URL from relative backend path
@@ -37,19 +22,9 @@ export const getFileUrl = (path: string | undefined): string => {
   if (!path) return 'https://via.placeholder.com/800x600?text=No+Image';
   if (path.startsWith('http')) return path;
 
-  // Remove /api from base URL to get the root server URL
-  const baseUrl = API_BASE_URL.replace(/\/api\/?$/, '');
-
-  // Clean the path to ensure it's not double-slashed
-  let cleanPath = path;
-
-  // If the path doesn't start with static/, and it's a relative path, 
-  // we might need to prepend static/ depending on how the backend stores it.
-  // But usually, the backend returns the full relative path from the app root.
-  if (!cleanPath.startsWith('/') && !cleanPath.startsWith('http')) {
-    cleanPath = `/${cleanPath}`;
-  }
-
+  // Remove /api from base URL and join with path
+  const baseUrl = API_BASE_URL.replace('/api', '');
+  const cleanPath = path.startsWith('/') ? path : `/${path}`;
   return `${baseUrl}${cleanPath}`;
 };
 
