@@ -1,7 +1,7 @@
 
 // Centralized API Configuration
-// Use environment variable for production, fallback to domain for development
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://focsit.in:8000/api';
+// Use environment variable for production, fallback to sub-domain for development
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://apis.focsit.in/api';
 
 // Helper to handle responses and throw specific backend errors
 const handleResponse = async (res: Response) => {
