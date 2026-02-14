@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Calendar, MapPin, X, ArrowRight, User, Camera, Sparkles, Tag, Users, Loader2 } from 'lucide-react';
+import { Calendar, MapPin, X, ArrowRight, User, Camera, Sparkles, Tag, Users, Loader2, Search } from 'lucide-react';
 import { api, getFileUrl } from '../services/api';
 import SEO from '../components/SEO';
 
@@ -22,6 +22,7 @@ const Events: React.FC = () => {
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -36,13 +37,13 @@ const Events: React.FC = () => {
 
   // Lock scroll
   useEffect(() => {
-    if (selectedEvent) {
+    if (selectedEvent || previewUrl) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = '';
     }
     return () => { document.body.style.overflow = ''; };
-  }, [selectedEvent]);
+  }, [selectedEvent, previewUrl]);
 
   return (
     <div className="bg-slate-50 min-h-screen">
@@ -156,13 +157,21 @@ const Events: React.FC = () => {
 
           <div className="pt-20">
             {/* Header / Banner */}
-            <div className="h-[40vh] md:h-[60vh] relative">
-              <img src={getFileUrl(selectedEvent.mainImage)} className="w-full h-full object-cover" />
-              <div className="absolute inset-0 bg-gradient-to-t from-dark-950 via-dark-950/40 to-transparent"></div>
-              <div className="absolute bottom-10 left-0 w-full">
-                <div className="container mx-auto px-4 md:px-6">
-                  <span className="inline-block px-4 py-1.5 bg-brand-500 text-white text-[10px] font-bold rounded-full mb-4 uppercase tracking-widest">{selectedEvent.category}</span>
-                  <h1 className="text-3xl md:text-5xl lg:text-7xl font-black text-white leading-none">{selectedEvent.title}</h1>
+            <div className="h-[40vh] md:h-[55vh] relative px-4 md:px-8 flex items-center justify-center bg-slate-50">
+              <div
+                className="w-full h-full max-w-6xl rounded-[2rem] md:rounded-[3rem] overflow-hidden shadow-2xl relative group cursor-zoom-in"
+                onClick={() => setPreviewUrl(getFileUrl(selectedEvent.mainImage))}
+              >
+                <img src={getFileUrl(selectedEvent.mainImage)} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                  <div className="bg-white/20 backdrop-blur-md p-4 rounded-full border border-white/30 text-white scale-75 group-hover:scale-100 transition-transform">
+                    <Search size={32} />
+                  </div>
+                </div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-70"></div>
+                <div className="absolute bottom-8 md:bottom-12 left-8 md:left-12">
+                  <span className="inline-block px-4 py-1.5 bg-brand-500 text-white text-[9px] font-bold rounded-full mb-4 uppercase tracking-[0.2em]">{selectedEvent.category}</span>
+                  <h1 className="text-3xl md:text-5xl lg:text-6xl font-black text-white leading-[1.1] tracking-tight">{selectedEvent.title}</h1>
                 </div>
               </div>
             </div>
@@ -172,32 +181,32 @@ const Events: React.FC = () => {
 
               {/* Left Side: Meta Data */}
               <div className="lg:w-1/3 order-2 lg:order-1">
-                <div className="bg-slate-50 p-8 md:p-10 rounded-[2.5rem] border border-slate-100 space-y-10 sticky top-32">
-                  <div>
-                    <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
-                      <Calendar size={14} className="text-brand-500" /> Date & Time
+                <div className="bg-slate-50/50 backdrop-blur-sm p-8 rounded-[2rem] border border-slate-100 space-y-10 sticky top-32">
+                  <div className="space-y-1.5">
+                    <h4 className="text-[8px] font-bold text-slate-400 uppercase tracking-[0.3em] flex items-center gap-2">
+                      <Calendar size={12} className="text-brand-500" /> Date & Time
                     </h4>
-                    <p className="text-lg font-bold text-slate-900">{selectedEvent.date}</p>
-                    <p className="text-slate-500">{selectedEvent.time}</p>
+                    <p className="text-sm font-extrabold text-slate-900">{selectedEvent.date}</p>
+                    <p className="text-[11px] text-slate-500 font-medium">{selectedEvent.time}</p>
                   </div>
 
-                  <div>
-                    <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
-                      <MapPin size={14} className="text-brand-500" /> Venue
+                  <div className="space-y-1.5">
+                    <h4 className="text-[8px] font-bold text-slate-400 uppercase tracking-[0.3em] flex items-center gap-2">
+                      <MapPin size={12} className="text-brand-500" /> Venue
                     </h4>
-                    <p className="text-lg font-bold text-slate-900">{selectedEvent.venue}</p>
+                    <p className="text-sm font-extrabold text-slate-900 leading-snug">{selectedEvent.venue}</p>
                   </div>
 
-                  <div>
-                    <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
-                      <User size={14} className="text-brand-500" /> Hosted By
+                  <div className="space-y-1.5">
+                    <h4 className="text-[8px] font-bold text-slate-400 uppercase tracking-[0.3em] flex items-center gap-2">
+                      <User size={12} className="text-brand-500" /> Hosted By
                     </h4>
-                    <p className="text-lg font-bold text-slate-900">{selectedEvent.organizer}</p>
+                    <p className="text-sm font-extrabold text-slate-900">{selectedEvent.organizer}</p>
                   </div>
 
                   <div className="pt-6 border-t border-slate-200">
-                    <button className="w-full bg-brand-600 hover:bg-brand-500 text-white font-bold py-4 rounded-xl shadow-xl shadow-brand-600/20 transition-all flex items-center justify-center gap-2">
-                      Contact Organizer <ArrowRight size={18} />
+                    <button className="w-full bg-brand-600 hover:bg-brand-500 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-brand-600/10 transition-all flex items-center justify-center gap-2 text-xs">
+                      Contact Organizer <ArrowRight size={16} />
                     </button>
                   </div>
                 </div>
@@ -205,20 +214,29 @@ const Events: React.FC = () => {
 
               {/* Right Side: Description & Gallery */}
               <div className="lg:w-2/3 order-1 lg:order-2">
-                <div className="prose prose-lg prose-slate max-w-none">
-                  <h2 className="text-3xl font-bold text-slate-900 mb-6">About the Event</h2>
-                  <p className="text-slate-600 text-xl leading-relaxed mb-12">
+                <div className="max-w-none">
+                  <h2 className="text-xl font-black text-slate-900 mb-6 tracking-tight">About the Event</h2>
+                  <p className="text-slate-600 text-[13px] md:text-sm leading-relaxed mb-12 font-light">
                     {selectedEvent.fullDesc}
                   </p>
 
-                  <h3 className="text-2xl font-bold text-slate-900 mb-8 flex items-center gap-3">
-                    <Camera className="text-brand-600" /> Event Highlights
+                  <h3 className="text-lg font-black text-slate-900 mb-8 flex items-center gap-3 tracking-tight">
+                    <Camera size={20} className="text-brand-600" /> Event Highlights
                   </h3>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {selectedEvent.gallery.map((img, i) => (
-                      <div key={i} className="rounded-3xl overflow-hidden shadow-lg border border-slate-100 group aspect-video">
-                        <img src={getFileUrl(img)} className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" />
+                      <div
+                        key={i}
+                        className="rounded-2xl overflow-hidden shadow-sm border border-slate-100 group aspect-video relative cursor-zoom-in"
+                        onClick={() => setPreviewUrl(getFileUrl(img))}
+                      >
+                        <img src={getFileUrl(img)} className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700" />
+                        <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                          <div className="bg-white/20 backdrop-blur-md p-3 rounded-full border border-white/30 text-white scale-75 group-hover:scale-100 transition-transform">
+                            <Search size={24} />
+                          </div>
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -239,6 +257,27 @@ const Events: React.FC = () => {
 
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Lightbox Image Preview Modal */}
+      {previewUrl && (
+        <div
+          className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-xl flex items-center justify-center p-4 md:p-10 animate-fade-in-rapid cursor-zoom-out"
+          onClick={() => setPreviewUrl(null)}
+        >
+          <button
+            className="absolute top-6 right-6 text-white/50 hover:text-white transition-colors"
+            onClick={() => setPreviewUrl(null)}
+          >
+            <X size={32} />
+          </button>
+          <img
+            src={previewUrl}
+            alt="Preview"
+            className="max-w-full max-h-full object-contain rounded-lg shadow-2xl animate-scale-in"
+            onClick={(e) => e.stopPropagation()}
+          />
         </div>
       )}
     </div>
