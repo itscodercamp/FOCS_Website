@@ -1,4 +1,4 @@
 # FOCS Environment Variables
 # Prefix with VITE_ to make them accessible to the frontend
 VITE_GEMINI_API_KEY=your_actual_gemini_key_here
-VITE_API_BASE_URL=http://82.29.165.213:5000/api
+VITE_API_BASE_URL=https://apis.focsit.in/api 
