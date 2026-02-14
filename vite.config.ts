@@ -6,12 +6,12 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, '.', '');
   return {
     server: {
-      port: 3000,
+      port: 3580,
       host: '0.0.0.0',
       allowedHosts: ['focsit.in', 'www.focsit.in']
     },
     preview: {
-      port: 3000,
+      port: 3580,
       host: '0.0.0.0',
       allowedHosts: ['focsit.in', 'www.focsit.in']
     },

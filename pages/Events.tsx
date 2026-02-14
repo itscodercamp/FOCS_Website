@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Calendar, MapPin, X, ArrowRight, User, Camera, Sparkles, Tag, Users, Loader2 } from 'lucide-react';
-import { api } from '../services/api';
+import { api, getFileUrl } from '../services/api';
 import SEO from '../components/SEO';
 
 interface Event {
@@ -86,7 +86,7 @@ const Events: React.FC = () => {
                 <div className="h-64 overflow-hidden relative">
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent z-10 opacity-60 group-hover:opacity-40 transition-opacity"></div>
                   <img
-                    src={event.mainImage}
+                    src={getFileUrl(event.mainImage)}
                     alt={event.title}
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                   />
@@ -157,7 +157,7 @@ const Events: React.FC = () => {
           <div className="pt-20">
             {/* Header / Banner */}
             <div className="h-[40vh] md:h-[60vh] relative">
-              <img src={selectedEvent.mainImage} className="w-full h-full object-cover" />
+              <img src={getFileUrl(selectedEvent.mainImage)} className="w-full h-full object-cover" />
               <div className="absolute inset-0 bg-gradient-to-t from-dark-950 via-dark-950/40 to-transparent"></div>
               <div className="absolute bottom-10 left-0 w-full">
                 <div className="container mx-auto px-4 md:px-6">
@@ -218,7 +218,7 @@ const Events: React.FC = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {selectedEvent.gallery.map((img, i) => (
                       <div key={i} className="rounded-3xl overflow-hidden shadow-lg border border-slate-100 group aspect-video">
-                        <img src={img} className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" />
+                        <img src={getFileUrl(img)} className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" />
                       </div>
                     ))}
                   </div>

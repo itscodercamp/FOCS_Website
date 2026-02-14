@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
-import { ExternalLink, Github, User, School, Clock, X, Layers, ArrowRight, Loader2 } from 'lucide-react';
-import { api } from '../services/api';
+import { ExternalLink, Github, User, School, Clock, X, Layers, ArrowRight, Loader2, Search } from 'lucide-react';
+import { api, getFileUrl } from '../services/api';
 import SEO from '../components/SEO';
 
 interface Project {
@@ -24,6 +24,7 @@ const Showcase: React.FC = () => {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -36,15 +37,15 @@ const Showcase: React.FC = () => {
     fetchProjects();
   }, []);
 
-  // Lock body scroll when modal is open
+  // Lock body scroll when modal or preview is open
   useEffect(() => {
-    if (selectedProject) {
+    if (selectedProject || previewUrl) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = '';
     }
     return () => { document.body.style.overflow = ''; };
-  }, [selectedProject]);
+  }, [selectedProject, previewUrl]);
 
   return (
     <div className="bg-slate-50 min-h-screen">
@@ -88,7 +89,7 @@ const Showcase: React.FC = () => {
                 <div className="h-48 overflow-hidden relative">
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10 opacity-60 group-hover:opacity-40 transition-opacity"></div>
                   <img
-                    src={project.thumbnail}
+                    src={getFileUrl(project.thumbnail)}
                     alt={project.title}
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                   />
@@ -139,102 +140,125 @@ const Showcase: React.FC = () => {
           {/* Close Button */}
           <button
             onClick={() => setSelectedProject(null)}
-            className="fixed top-6 right-6 z-50 bg-black/50 hover:bg-black/70 text-white backdrop-blur-md p-3 rounded-full transition-all shadow-lg border border-white/20 group"
+            className="fixed top-6 right-6 z-[60] bg-black/50 hover:bg-black/70 text-white backdrop-blur-md p-2.5 rounded-full transition-all shadow-lg border border-white/20 group scale-90 md:scale-100"
           >
-            <X size={28} className="group-hover:rotate-90 transition-transform duration-300" />
+            <X size={24} className="group-hover:rotate-90 transition-transform duration-300" />
           </button>
 
-          {/* Left: Image / Gallery - Sticky on Desktop */}
-          <div className="w-full md:w-1/2 h-[50vh] md:h-screen relative md:sticky md:top-0 bg-slate-100">
-            <img
-              src={selectedProject.thumbnail}
-              alt={selectedProject.title}
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent md:bg-gradient-to-r md:from-transparent md:to-black/5"></div>
-
-            {/* Mobile Title Overlay */}
-            <div className="absolute bottom-6 left-6 right-6 text-white md:hidden">
-              <div className="flex gap-2 mb-2">
-                {selectedProject.techStack.slice(0, 3).map((tech, i) => (
-                  <span key={i} className="text-[10px] font-bold bg-white/20 backdrop-blur-md px-2 py-1 rounded-full border border-white/30">{tech}</span>
-                ))}
+          {/* Left: Image Card - Sticky on Desktop */}
+          <div className="w-full md:w-1/2 h-[45vh] md:h-screen relative md:sticky md:top-0 bg-slate-50/50 p-4 md:p-8 lg:p-12 flex items-center justify-center">
+            <div
+              className="w-full h-full rounded-[2rem] md:rounded-[3rem] overflow-hidden shadow-2xl relative group cursor-zoom-in border border-white/20"
+              onClick={() => setPreviewUrl(getFileUrl(selectedProject.thumbnail))}
+            >
+              <img
+                src={getFileUrl(selectedProject.thumbnail)}
+                alt={selectedProject.title}
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+              />
+              <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                <div className="bg-white/20 backdrop-blur-md p-4 rounded-full border border-white/30 text-white scale-75 group-hover:scale-100 transition-transform">
+                  <Search size={32} />
+                </div>
               </div>
-              <h2 className="text-3xl font-bold leading-tight">{selectedProject.title}</h2>
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60 md:opacity-40"></div>
+
+              {/* Mobile Title Overlay */}
+              <div className="absolute bottom-8 left-8 right-8 text-white md:hidden">
+                <div className="flex gap-2 mb-3">
+                  {selectedProject.techStack.slice(0, 3).map((tech, i) => (
+                    <span key={i} className="text-[9px] font-bold bg-white/20 backdrop-blur-md px-2.5 py-1 rounded-full border border-white/30 uppercase tracking-widest">{tech}</span>
+                  ))}
+                </div>
+                <h2 className="text-xl font-black leading-tight tracking-tight">{selectedProject.title}</h2>
+              </div>
             </div>
           </div>
 
           {/* Right: Details - Scrollable */}
-          <div className="w-full md:w-1/2 min-h-screen bg-white p-8 md:p-20 flex flex-col">
+          <div className="w-full md:w-1/2 min-h-screen bg-white p-6 md:p-10 lg:p-14 flex flex-col">
             <div className="max-w-xl mx-auto w-full">
-              <div className="hidden md:block mb-8">
-                <h2 className="text-4xl lg:text-5xl font-black text-slate-900 mb-4 leading-tight">{selectedProject.title}</h2>
-                <div className="flex flex-wrap gap-2">
+              <div className="hidden md:block mb-6">
+                <h2 className="text-xl lg:text-2xl font-black text-slate-900 mb-2 leading-tight tracking-tight">{selectedProject.title}</h2>
+                <div className="flex flex-wrap gap-1">
                   {selectedProject.techStack.map((tech, i) => (
-                    <span key={i} className="bg-slate-100 text-slate-600 text-xs font-bold px-3 py-1.5 rounded-full border border-slate-200">
+                    <span key={i} className="bg-slate-50 text-slate-500 text-[8px] font-bold px-2 py-0.5 rounded-md border border-slate-100 uppercase tracking-widest">
                       {tech}
                     </span>
                   ))}
                 </div>
               </div>
 
-              <div className="prose prose-lg prose-slate mb-12">
-                <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
-                  <Layers size={16} /> Project Overview
+              <div className="mb-8">
+                <h3 className="text-[8px] font-bold text-slate-400 uppercase tracking-[0.3em] mb-2 flex items-center gap-2">
+                  <Layers size={10} className="text-brand-500" /> Project Overview
                 </h3>
-                <p className="text-slate-600 leading-relaxed text-lg">
+                <p className="text-slate-600 leading-relaxed text-[11px] md:text-[12px] font-light">
                   {selectedProject.fullDescription}
                 </p>
               </div>
 
-              <div className="grid grid-cols-2 gap-8 mb-12 p-6 bg-slate-50 rounded-2xl border border-slate-100">
-                <div>
-                  <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 flex items-center gap-2">
-                    <User size={14} /> Developer
+              <div className="grid grid-cols-2 gap-4 mb-10 p-5 bg-slate-50/80 backdrop-blur-sm rounded-3xl border border-slate-100">
+                <div className="space-y-1.5">
+                  <h3 className="text-[8px] font-bold text-slate-400 uppercase tracking-[0.3em] flex items-center gap-2">
+                    <User size={10} className="text-brand-500" /> Developer
                   </h3>
-                  <p className="font-bold text-slate-900 text-lg">{selectedProject.studentName}</p>
-                  <p className="text-sm text-slate-500">{selectedProject.year} Student</p>
+                  <p className="font-extrabold text-slate-900 text-[12px]">{selectedProject.studentName}</p>
+                  <p className="text-[10px] text-slate-500 font-medium">{selectedProject.year} Student</p>
                 </div>
-                <div>
-                  <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 flex items-center gap-2">
-                    <School size={14} /> Institution
+                <div className="space-y-1.5">
+                  <h3 className="text-[8px] font-bold text-slate-400 uppercase tracking-[0.3em] flex items-center gap-2">
+                    <School size={10} className="text-brand-500" /> Institution
                   </h3>
-                  <p className="font-bold text-slate-900 text-lg">{selectedProject.college}</p>
+                  <p className="font-extrabold text-slate-900 text-[12px] leading-tight">{selectedProject.college}</p>
                 </div>
-                <div>
-                  <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 flex items-center gap-2">
-                    <Clock size={14} /> Duration
+                <div className="space-y-1.5">
+                  <h3 className="text-[8px] font-bold text-slate-400 uppercase tracking-[0.3em] flex items-center gap-2">
+                    <Clock size={10} className="text-brand-500" /> Duration
                   </h3>
-                  <p className="font-bold text-slate-900 text-lg">{selectedProject.duration}</p>
+                  <p className="font-extrabold text-slate-900 text-[12px]">{selectedProject.duration}</p>
                 </div>
               </div>
 
-              {/* Screenshots */}
+              {/* Screenshots Gallery */}
               {selectedProject.screenshots && selectedProject.screenshots.length > 0 && (
-                <div className="mb-12">
-                  <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-6">
+                <div className="mb-10">
+                  <h3 className="text-[9px] font-bold text-slate-400 uppercase tracking-[0.25em] mb-4">
                     Project Gallery
                   </h3>
-                  <div className="space-y-6">
+                  <div className="grid grid-cols-1 gap-6">
                     {selectedProject.screenshots.map((shot, i) => (
-                      <div key={i} className="rounded-2xl overflow-hidden shadow-lg border border-slate-100 group">
-                        <img src={shot} alt="Screenshot" className="w-full h-auto transform group-hover:scale-105 transition-transform duration-500" />
+                      <div
+                        key={i}
+                        className="rounded-2xl overflow-hidden shadow-sm border border-slate-100 group cursor-zoom-in relative"
+                        onClick={() => setPreviewUrl(getFileUrl(shot))}
+                      >
+                        <img
+                          src={getFileUrl(shot)}
+                          alt={`Screenshot ${i + 1}`}
+                          className="w-full h-auto transform group-hover:scale-105 transition-transform duration-700"
+                        />
+                        <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                          <div className="bg-white/20 backdrop-blur-md p-3 rounded-full border border-white/30 text-white scale-75 group-hover:scale-100 transition-transform">
+                            <Search size={24} />
+                          </div>
+                        </div>
                       </div>
                     ))}
                   </div>
                 </div>
               )}
 
-              {/* Actions */}
-              <div className="flex flex-col sm:flex-row gap-4 pt-8 border-t border-slate-100 mt-auto sticky bottom-0 bg-white/95 backdrop-blur-sm pb-8 md:pb-0">
+              {/* Actions Sticky Footer */}
+              <div className="flex flex-col sm:flex-row gap-3 pt-6 border-t border-slate-100 mt-auto sticky bottom-0 bg-white/95 backdrop-blur-md pb-6 md:pb-0">
                 {selectedProject.liveLink && (
                   <a
                     href={selectedProject.liveLink}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex-1 bg-brand-600 hover:bg-brand-500 text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-xl shadow-brand-600/20 hover:-translate-y-1"
+                    className="flex-1 bg-brand-600 hover:bg-brand-500 text-white font-bold py-3 rounded-lg flex items-center justify-center gap-2 transition-all shadow-md shadow-brand-600/10 hover:-translate-y-1 text-xs"
                   >
-                    <ExternalLink size={20} /> Live Preview
+                    <ExternalLink size={16} /> Live Preview
                   </a>
                 )}
                 {selectedProject.repoLink && (
@@ -242,14 +266,35 @@ const Showcase: React.FC = () => {
                     href={selectedProject.repoLink}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={`flex-1 border-2 border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700 font-bold py-4 rounded-xl flex items-center justify-center gap-2 transition-all hover:-translate-y-1 ${!selectedProject.liveLink ? 'w-full' : ''}`}
+                    className={`flex-1 border border-slate-200 hover:border-brand-200 hover:bg-brand-50/30 text-slate-600 font-bold py-3 rounded-lg flex items-center justify-center gap-2 transition-all hover:-translate-y-1 text-xs ${!selectedProject.liveLink ? 'w-full' : ''}`}
                   >
-                    <Github size={20} /> View Code
+                    <Github size={16} /> View Code
                   </a>
                 )}
               </div>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Lightbox Image Preview Modal */}
+      {previewUrl && (
+        <div
+          className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-xl flex items-center justify-center p-4 md:p-10 animate-fade-in-rapid cursor-zoom-out"
+          onClick={() => setPreviewUrl(null)}
+        >
+          <button
+            className="absolute top-6 right-6 text-white/50 hover:text-white transition-colors"
+            onClick={() => setPreviewUrl(null)}
+          >
+            <X size={32} />
+          </button>
+          <img
+            src={previewUrl}
+            alt="Preview"
+            className="max-w-full max-h-full object-contain rounded-lg shadow-2xl animate-scale-in"
+            onClick={(e) => e.stopPropagation()}
+          />
         </div>
       )}
     </div>

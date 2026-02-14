@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
-import { api } from '../services/api';
-import { Layout, Calendar, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
+import { Layout, Calendar, CheckCircle, AlertCircle, Loader2, Briefcase } from 'lucide-react';
+import { api, getFileUrl } from '../services/api';
 
 const Admin: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'project' | 'event'>('project');

@@ -16,6 +16,17 @@ if (typeof window !== 'undefined' && window.location.protocol === 'https:' && AP
   console.warn("Security Warning: You are accessing an insecure backend (HTTP) from a secure frontend (HTTPS). Browsers may block this connection due to Mixed Content policies.");
 }
 
+// Helper to get full file URL from relative backend path
+export const getFileUrl = (path: string | undefined): string => {
+  if (!path) return 'https://via.placeholder.com/800x600?text=No+Image';
+  if (path.startsWith('http')) return path;
+
+  // Remove /api from base URL and join with path
+  const baseUrl = API_BASE_URL.replace('/api', '');
+  const cleanPath = path.startsWith('/') ? path : `/${path}`;
+  return `${baseUrl}${cleanPath}`;
+};
+
 export const api = {
   // --- 1. Contact Form ---
   submitContact: async (data: { name: string; email: string; type: string; message: string }) => {
